@@ -107,7 +107,11 @@ class RepositoryCreator:
         print(f"Listing repositories for {self.user.login}:")
         print("-" * 60)
         
-        repos = self.user.get_repos()[:max_repos]
+        repos = []
+        for i, repo in enumerate(self.user.get_repos()):
+            if i >= max_repos:
+                break
+            repos.append(repo)
         
         if not repos:
             print("No repositories found.")
