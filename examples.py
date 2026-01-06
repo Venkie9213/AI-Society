@@ -4,8 +4,9 @@ Example: Batch Repository Creation
 This example demonstrates how to create multiple repositories programmatically.
 """
 
-from create_repository import RepositoryCreator
 import time
+
+from create_repository import RepositoryCreator
 
 
 def create_multiple_repositories():

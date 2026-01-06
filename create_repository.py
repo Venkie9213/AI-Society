@@ -107,7 +107,7 @@ class RepositoryCreator:
         print(f"Listing repositories for {self.user.login}:")
         print("-" * 60)
         
-        repos = list(self.user.get_repos()[:max_repos])
+        repos = self.user.get_repos()[:max_repos]
         
         if not repos:
             print("No repositories found.")
