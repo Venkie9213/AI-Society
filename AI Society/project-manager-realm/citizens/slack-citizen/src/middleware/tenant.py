@@ -3,21 +3,33 @@
 from typing import Callable, Optional
 
 import httpx
-from fastapi import HTTPException, Request, Response, status
+from fastapi import Request, Response
 
 from src.config import settings
+from src.middleware.tenant_extractors import (
+    HeaderTenantExtractor,
+    SlackTeamTenantExtractor,
+    TenantExtractorChain,
+)
 from src.utils.observability import add_context, clear_context, get_logger
 
 logger = get_logger(__name__)
 
 
 class TenantMiddleware:
-    """Middleware to extract and validate tenant IDs."""
+    """Middleware to extract and validate tenant IDs using strategy pattern."""
 
     def __init__(self, app: Callable) -> None:
-        """Initialize the middleware."""
+        """Initialize the middleware with tenant extractor chain."""
         self.app = app
         self._tenant_cache: dict[str, str] = {}  # slack_team_id -> tenant_id
+        # Create extractor chain: Slack body, then header
+        self.extractor_chain = TenantExtractorChain(
+            [
+                SlackTeamTenantExtractor(),
+                HeaderTenantExtractor(),
+            ]
+        )
 
     async def __call__(self, request: Request, call_next: Callable) -> Response:
         """Extract tenant ID from request."""
@@ -25,27 +37,17 @@ class TenantMiddleware:
         if request.url.path in ["/health", "/metrics"]:
             return await call_next(request)
 
-        # Extract tenant ID based on request type
+        # Extract tenant ID using chain of responsibility
         tenant_id: Optional[str] = None
-        
+
         if request.url.path.startswith("/webhooks/slack"):
             # Extract from Slack team_id in body
             body = getattr(request.state, "body", None)
             if body:
-                import json
-                try:
-                    data = json.loads(body)
-                    slack_team_id = data.get("team_id")
-                    if slack_team_id:
-                        tenant_id = await self._map_slack_team_to_tenant(slack_team_id)
-                except Exception as e:
-                    logger.error(
-                        "failed_to_extract_tenant_from_body",
-                        error=str(e),
-                    )
+                tenant_id = await self.extractor_chain.extract(body=body)
         else:
             # Extract from header for internal requests
-            tenant_id = request.headers.get("X-Tenant-ID")
+            tenant_id = await self.extractor_chain.extract(headers=dict(request.headers))
 
         # Use default tenant if mapping fails
         if not tenant_id:
@@ -55,6 +57,12 @@ class TenantMiddleware:
                 path=request.url.path,
                 default_tenant_id=tenant_id,
             )
+
+        # Map Slack team ID to tenant ID if needed
+        if request.url.path.startswith("/webhooks/slack") and tenant_id.startswith("T"):
+            # This looks like a Slack team ID, map it
+            mapped_tenant_id = await self._map_slack_team_to_tenant(tenant_id)
+            tenant_id = mapped_tenant_id
 
         # Store in request state
         request.state.tenant_id = tenant_id
@@ -74,10 +82,10 @@ class TenantMiddleware:
     async def _map_slack_team_to_tenant(self, slack_team_id: str) -> str:
         """
         Map Slack team ID to internal tenant ID.
-        
+
         Args:
             slack_team_id: Slack workspace/team ID
-        
+
         Returns:
             Internal tenant ID
         """
@@ -85,10 +93,8 @@ class TenantMiddleware:
         if slack_team_id in self._tenant_cache:
             return self._tenant_cache[slack_team_id]
 
-        # TODO: Call tenant mapping service
-        # For now, use simple 1:1 mapping
         tenant_id = f"tenant_{slack_team_id}"
-        
+
         # Optionally call mapping service
         if settings.tenant_mapping_service_url != "http://localhost:8080/api/tenants":
             try:
@@ -99,33 +105,23 @@ class TenantMiddleware:
                     if response.status_code == 200:
                         data = response.json()
                         tenant_id = data.get("tenant_id", tenant_id)
+                        logger.debug(
+                            "mapped_slack_team_to_tenant",
+                            slack_team_id=slack_team_id,
+                            tenant_id=tenant_id,
+                        )
             except Exception as e:
                 logger.warning(
-                    "tenant_mapping_service_unavailable",
+                    "failed_to_call_tenant_mapping_service",
                     slack_team_id=slack_team_id,
                     error=str(e),
                 )
 
         # Cache the mapping
         self._tenant_cache[slack_team_id] = tenant_id
-        
-        logger.debug(
-            "tenant_mapped",
-            slack_team_id=slack_team_id,
-            tenant_id=tenant_id,
-        )
-
         return tenant_id
 
 
 def get_tenant_id(request: Request) -> str:
-    """
-    Get tenant ID from request state.
-    
-    Args:
-        request: FastAPI request object
-    
-    Returns:
-        Tenant ID
-    """
+    """Get tenant ID from request state."""
     return getattr(request.state, "tenant_id", settings.default_tenant_id)

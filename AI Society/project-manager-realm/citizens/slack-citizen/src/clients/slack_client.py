@@ -1,10 +1,11 @@
-"""Slack Web API client for outbound notifications."""
+"""Slack Web API client with retry and metrics tracking."""
 
 from typing import Any, Optional
 
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.errors import SlackApiError
 
+from src.clients.slack_repository import SlackClientRepository
 from src.config import settings
 from src.utils.observability import get_logger, slack_api_calls, slack_api_errors
 from src.utils.retry import retry_with_dlq
@@ -13,17 +14,21 @@ logger = get_logger(__name__)
 
 
 class SlackClient:
-    """Client for interacting with Slack Web API."""
+    """Client for interacting with Slack Web API with metrics and retry.
+
+    Uses Repository pattern for data access layer.
+    """
 
     def __init__(self, bot_token: Optional[str] = None) -> None:
         """
         Initialize Slack client.
-        
+
         Args:
             bot_token: Slack bot OAuth token (defaults to settings)
         """
         self.bot_token = bot_token or settings.slack_bot_token
-        self.client = AsyncWebClient(token=self.bot_token)
+        sdk_client = AsyncWebClient(token=self.bot_token)
+        self._repository = SlackClientRepository(sdk_client)
 
     @retry_with_dlq(
         max_attempts=3,
@@ -38,25 +43,9 @@ class SlackClient:
         tenant_id: str = "unknown",
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """
-        Post a message to a Slack channel.
-        
-        Args:
-            channel: Channel ID or name
-            text: Message text (fallback for notifications)
-            blocks: Slack Block Kit blocks for rich formatting
-            thread_ts: Thread timestamp to reply in thread
-            tenant_id: Tenant ID for metrics
-            **kwargs: Additional arguments for chat.postMessage
-        
-        Returns:
-            Slack API response
-        
-        Raises:
-            SlackApiError: If the API call fails
-        """
+        """Post a message to Slack."""
         try:
-            response = await self.client.chat_postMessage(
+            response = await self._repository.post_message(
                 channel=channel,
                 text=text,
                 blocks=blocks,
@@ -79,7 +68,7 @@ class SlackClient:
                 message_ts=response.get("ts"),
             )
 
-            return response.data
+            return response
 
         except SlackApiError as e:
             # Track error metrics
@@ -116,22 +105,9 @@ class SlackClient:
         tenant_id: str = "unknown",
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """
-        Update an existing Slack message.
-        
-        Args:
-            channel: Channel ID
-            ts: Message timestamp to update
-            text: New message text
-            blocks: New Slack blocks
-            tenant_id: Tenant ID for metrics
-            **kwargs: Additional arguments for chat.update
-        
-        Returns:
-            Slack API response
-        """
+        """Update a Slack message."""
         try:
-            response = await self.client.chat_update(
+            response = await self._repository.update_message(
                 channel=channel,
                 ts=ts,
                 text=text,
@@ -152,7 +128,7 @@ class SlackClient:
                 tenant_id=tenant_id,
             )
 
-            return response.data
+            return response
 
         except SlackApiError as e:
             slack_api_errors.labels(
@@ -182,23 +158,12 @@ class SlackClient:
         emoji: str,
         tenant_id: str = "unknown",
     ) -> dict[str, Any]:
-        """
-        Add a reaction emoji to a message.
-        
-        Args:
-            channel: Channel ID
-            timestamp: Message timestamp
-            emoji: Emoji name (without colons)
-            tenant_id: Tenant ID for metrics
-        
-        Returns:
-            Slack API response
-        """
+        """Add a reaction to a message."""
         try:
-            response = await self.client.reactions_add(
+            response = await self._repository.add_reaction(
                 channel=channel,
                 timestamp=timestamp,
-                name=emoji,
+                emoji=emoji,
             )
 
             slack_api_calls.labels(
@@ -215,7 +180,7 @@ class SlackClient:
                 tenant_id=tenant_id,
             )
 
-            return response.data
+            return response
 
         except SlackApiError as e:
             slack_api_errors.labels(
@@ -232,96 +197,6 @@ class SlackClient:
                 error=e.response["error"],
             )
             # Don't raise - reactions are non-critical
-            return {}
-
-    async def open_modal(
-        self,
-        trigger_id: str,
-        view: dict[str, Any],
-        tenant_id: str = "unknown",
-    ) -> dict[str, Any]:
-        """
-        Open a modal dialog.
-        
-        Args:
-            trigger_id: Trigger ID from interaction
-            view: Modal view definition
-            tenant_id: Tenant ID for metrics
-        
-        Returns:
-            Slack API response
-        """
-        try:
-            response = await self.client.views_open(
-                trigger_id=trigger_id,
-                view=view,
-            )
-
-            slack_api_calls.labels(
-                tenant_id=tenant_id,
-                endpoint="views.open",
-                status="success",
-            ).inc()
-
-            logger.info(
-                "slack_modal_opened",
-                tenant_id=tenant_id,
-                view_id=response.get("view", {}).get("id"),
-            )
-
-            return response.data
-
-        except SlackApiError as e:
-            slack_api_errors.labels(
-                tenant_id=tenant_id,
-                error_type=e.response["error"],
-            ).inc()
-
-            logger.error(
-                "slack_modal_open_failed",
-                tenant_id=tenant_id,
-                error=e.response["error"],
-            )
-            raise
-
-    async def get_user_info(
-        self,
-        user_id: str,
-        tenant_id: str = "unknown",
-    ) -> dict[str, Any]:
-        """
-        Get user information.
-        
-        Args:
-            user_id: Slack user ID
-            tenant_id: Tenant ID for metrics
-        
-        Returns:
-            User information
-        """
-        try:
-            response = await self.client.users_info(user=user_id)
-
-            slack_api_calls.labels(
-                tenant_id=tenant_id,
-                endpoint="users.info",
-                status="success",
-            ).inc()
-
-            return response.data.get("user", {})
-
-        except SlackApiError as e:
-            slack_api_errors.labels(
-                tenant_id=tenant_id,
-                error_type=e.response["error"],
-            ).inc()
-
-            logger.warning(
-                "slack_user_info_failed",
-                user_id=user_id,
-                tenant_id=tenant_id,
-                error=e.response["error"],
-            )
             return {}
 
 
