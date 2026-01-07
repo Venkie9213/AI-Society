@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'slack-citizen'
+    static_configs:
+      - targets: ['slack-citizen:9090']
+        labels:
+          service: 'slack-citizen'
+          environment: 'docker'

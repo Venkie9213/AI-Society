@@ -1,0 +1,41 @@
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Slack Integration
+slack-sdk==3.26.2
+aiohttp==3.9.1
+
+# Event Bus
+aiokafka==0.10.0
+
+# Data Validation
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# HTTP Client
+httpx==0.26.0
+
+# Observability
+structlog==24.1.0
+prometheus-client==0.19.0
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+opentelemetry-instrumentation-fastapi==0.43b0
+
+# Utilities
+python-dotenv==1.0.0
+tenacity==8.2.3
+
+# Development
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+httpx==0.26.0
+faker==22.0.0
+
+# Type Checking
+mypy==1.8.0
+types-redis==4.6.0.11
