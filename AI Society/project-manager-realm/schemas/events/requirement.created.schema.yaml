@@ -1,0 +1,38 @@
+$id: https://ai-society.example/schemas/events/requirement.created
+title: Requirement Created Event
+description: Event emitted when a new requirement is created via intake or API.
+type: object
+properties:
+  event_id:
+    type: string
+  occurred_at:
+    type: string
+    format: date-time
+  tenant_id:
+    type: string
+  source:
+    type: string
+  payload_version:
+    type: string
+  payload:
+    type: object
+    properties:
+      requirement_id:
+        type: string
+      creator_id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      metadata:
+        type: object
+    required:
+      - requirement_id
+      - title
+      - description
+required:
+  - event_id
+  - occurred_at
+  - tenant_id
+  - payload

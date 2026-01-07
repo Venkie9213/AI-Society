@@ -1,0 +1,24 @@
+name: requirement-question-generator
+version: v1
+description: |
+  Given a partial requirement description, generate clarifying questions to reach >=95% intent confidence.
+inputs:
+  - project_context
+  - user_description
+  - conversation_history
+template: |
+  You are a clarifying assistant. The user provided: "{{user_description}}".
+  Use project context: {{project_context}}.
+  Conversation history:
+  {{conversation_history}}
+
+  Generate up to 5 concise, ordered clarifying questions that will help resolve ambiguity and fill gaps necessary to produce a PRD.
+
+  Output JSON: {"questions":[{"id":1,"text":"..."}], "rationale":"..."}
+config:
+  max_questions: 5
+  stop_condition_confidence: 0.95
+metrics:
+  - question_clarity
+  - gap_coverage
+  - progress_toward_confidence

@@ -1,0 +1,15 @@
+providers:
+  - id: openai
+    name: OpenAI
+    type: llm
+    config:
+      api_key_env: OPENAI_API_KEY
+  - id: anthropic
+    name: Anthropic
+    type: llm
+    config:
+      api_key_env: ANTHROPIC_API_KEY
+routing:
+  default_chain:
+    - openai
+    - anthropic

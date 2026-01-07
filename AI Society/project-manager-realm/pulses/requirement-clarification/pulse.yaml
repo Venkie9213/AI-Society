@@ -1,0 +1,24 @@
+id: pulse.requirement_clarification
+name: Requirement Clarification
+description: |
+  Multi-turn pulse that extracts intent from stakeholder input using the intelligence layer.
+trigger:
+  type: http
+  path: /pulses/requirement-clarification/start
+steps:
+  - id: intent-extraction
+    type: intelligence.intent_conversation
+    params:
+      prompt: requirement-question-generator:v1
+      confidence_threshold: 0.95
+  - id: prd-generation
+    type: intelligence.run_prompt
+    params:
+      prompt: prd-generator:v1
+      depends_on: intent-extraction
+outputs:
+  - intent_id
+  - prd_id
+retry_policy:
+  max_retries: 3
+  backoff: exponential

@@ -1,0 +1,22 @@
+$id: https://ai-society.example/schemas/pulses/requirement-clarification
+title: Requirement Clarification Pulse Schema
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  steps:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        params:
+          type: object
+required:
+  - id
+  - name
