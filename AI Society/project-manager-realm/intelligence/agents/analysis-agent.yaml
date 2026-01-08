@@ -1,0 +1,60 @@
+name: analysis-agent
+version: v1
+type: agent
+description: |
+  Analyzes requirements or PRD for completeness, feasibility, and potential issues.
+
+inputs:
+  requirements:
+    type: object
+    description: Requirements or PRD to analyze
+  analysis_depth:
+    type: string
+    enum: [quick, standard, deep]
+    default: standard
+    description: Level of analysis detail
+
+outputs:
+  analysis:
+    type: object
+    properties:
+      completeness_score: {type: number, minimum: 0, maximum: 100}
+      gaps_identified: {type: array, items: {type: string}}
+      risks: {type: array}
+      feasibility_assessment: {type: string}
+      recommendations: {type: array, items: {type: string}}
+      estimated_effort: {type: string}
+      dependencies: {type: array, items: {type: string}}
+
+config:
+  analysis_aspects:
+    - completeness
+    - clarity
+    - feasibility
+    - risk_assessment
+    - effort_estimation
+    - dependencies
+
+# Routing
+routing:
+  provider: gemini
+  model: gemini-3-pro-preview  # Pro model for deep analysis
+  use_case: reasoning
+  temperature: 0.5
+  max_tokens: 2000
+
+# Prompt reference
+prompt_template: requirements-analyzer
+
+# Success criteria
+success_criteria:
+  - all_gaps_identified: true
+  - recommendations_actionable: true
+  - effort_estimate_provided: true
+
+# Metrics
+metrics:
+  - analysis_accuracy
+  - gap_identification_rate
+  - recommendation_usefulness
+  - effort_estimate_accuracy

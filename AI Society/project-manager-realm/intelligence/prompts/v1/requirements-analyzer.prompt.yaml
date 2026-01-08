@@ -1,0 +1,52 @@
+name: requirements-analyzer
+version: v1
+description: |
+  Analyzes requirements or PRD for completeness, feasibility, and potential issues.
+
+inputs:
+  - requirements
+  - analysis_depth
+
+template: |
+  You are a requirements analyst. Analyze the following requirements:
+
+  {{requirements}}
+
+  Provide a detailed analysis with:
+
+  1. **Completeness Score** (0-100): How complete are these requirements?
+  2. **Gaps Identified**: What important information is missing?
+  3. **Risks**: What could go wrong? What are the risks?
+  4. **Feasibility Assessment**: Is this achievable? Are there technical challenges?
+  5. **Recommendations**: How can these requirements be improved?
+  6. **Estimated Effort**: Rough estimate of work required (story points or hours)
+  7. **Dependencies**: What other systems, components, or decisions does this depend on?
+
+  Analysis Depth: {{analysis_depth}}
+
+  Output as valid JSON:
+  {
+    "analysis": {
+      "completeness_score": <0-100>,
+      "gaps_identified": ["..."],
+      "risks": [{"risk": "...", "severity": "high|medium|low", "mitigation": "..."}],
+      "feasibility_assessment": "...",
+      "recommendations": ["..."],
+      "estimated_effort": "...",
+      "dependencies": ["..."]
+    }
+  }
+
+config:
+  max_tokens: 2000
+  temperature: 0.5
+  format: json
+  analysis_depth_templates:
+    quick: "Provide a quick high-level analysis"
+    standard: "Provide a standard, thorough analysis"
+    deep: "Provide a detailed, comprehensive analysis including all edge cases"
+
+metrics:
+  - analysis_accuracy
+  - gap_identification_completeness
+  - recommendation_quality

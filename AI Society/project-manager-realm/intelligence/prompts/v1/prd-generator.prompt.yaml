@@ -1,0 +1,60 @@
+name: prd-generator
+version: v1
+description: |
+  Converts clarified requirements into a formal PRD with all required sections.
+
+inputs:
+  - requirement_description
+  - clarification_answers
+  - project_context
+
+template: |
+  You are a PRD expert. Your task is to generate a comprehensive Product Requirements Document.
+
+  ## Requirement Description
+  {{requirement_description}}
+
+  ## Clarification Answers
+  {{clarification_answers}}
+
+  ## Project Context
+  {{project_context}}
+
+  Generate a formal PRD with the following sections:
+  
+  1. **Overview**: Brief summary of what is being built
+  2. **Objectives**: What the feature aims to accomplish
+  3. **User Stories**: Format as "As a [role], I want [action], so that [benefit]"
+  4. **Acceptance Criteria**: Specific, measurable success conditions
+  5. **Requirements**: Functional and non-functional requirements
+  6. **Scope**: What's in and out of scope
+  7. **Technical Considerations**: Architecture, integration, performance needs
+  8. **Timeline**: Estimated phases and milestones
+  9. **Success Metrics**: How we measure success
+  
+  Output as valid JSON with structure:
+  {
+    "prd": {
+      "title": "...",
+      "overview": "...",
+      "objectives": ["..."],
+      "user_stories": ["..."],
+      "acceptance_criteria": ["..."],
+      "requirements": [...],
+      "scope": {"in_scope": [...], "out_of_scope": [...]},
+      "technical_considerations": ["..."],
+      "timeline": {...},
+      "success_metrics": ["..."]
+    }
+  }
+
+config:
+  max_tokens: 4000
+  temperature: 0.3
+  format: json
+  stop_condition: complete_prd_generated
+
+metrics:
+  - prd_completeness
+  - requirement_clarity
+  - section_quality
