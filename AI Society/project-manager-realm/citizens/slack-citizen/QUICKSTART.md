@@ -51,8 +51,8 @@ nano .env
 
 Update these values in `.env`:
 ```bash
-SLACK_SIGNING_SECRET=your_signing_secret_here
-SLACK_BOT_TOKEN=xoxb-your-bot-token-here
+PROJECT_MANAGER_SLACK_SIGNING_SECRET=your_signing_secret_here
+PROJECT_MANAGER_SLACK_BOT_TOKEN=xoxb-your-bot-token-here
 ```
 
 ### 3. Start the Service with Docker
@@ -201,7 +201,7 @@ Access Kafka UI at http://localhost:8080 to:
 **Problem:** `Invalid Slack signature` errors
 
 **Solutions:**
-1. Verify `SLACK_SIGNING_SECRET` matches your Slack app
+1. Verify `PROJECT_MANAGER_SLACK_SIGNING_SECRET` matches your Slack app
 2. Check system clock is synchronized
 3. Ensure raw request body is used (not parsed)
 4. Check webhook URL is HTTPS (use ngrok for local dev)
@@ -221,7 +221,7 @@ Access Kafka UI at http://localhost:8080 to:
 **Problem:** Bot doesn't react or send messages
 
 **Solutions:**
-1. Verify bot token is valid: `SLACK_BOT_TOKEN` in `.env`
+1. Verify bot token is valid: `PROJECT_MANAGER_SLACK_BOT_TOKEN` in `.env`
 2. Check bot has required scopes in Slack app settings
 3. Ensure bot is invited to the channel: `/invite @YourBot`
 4. Check logs for Slack API errors

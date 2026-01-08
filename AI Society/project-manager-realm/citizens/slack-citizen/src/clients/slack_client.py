@@ -26,7 +26,7 @@ class SlackClient:
         Args:
             bot_token: Slack bot OAuth token (defaults to settings)
         """
-        self.bot_token = bot_token or settings.slack_bot_token
+        self.bot_token = bot_token or settings.project_manager_slack_bot_token
         sdk_client = AsyncWebClient(token=self.bot_token)
         self._repository = SlackClientRepository(sdk_client)
 

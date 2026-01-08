@@ -7,6 +7,7 @@ from src.utils.observability.metrics import (
     slack_api_calls,
     slack_api_errors,
     kafka_messages_published,
+    kafka_publish_errors,
     kafka_messages_consumed,
     event_processing_duration,
 )
@@ -22,6 +23,7 @@ __all__ = [
     "slack_api_calls",
     "slack_api_errors",
     "kafka_messages_published",
+    "kafka_publish_errors",
     "kafka_messages_consumed",
     "event_processing_duration",
     "start_metrics_server",

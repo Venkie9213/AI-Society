@@ -34,6 +34,12 @@ kafka_messages_published = Counter(
     ["tenant_id", "topic"],
 )
 
+kafka_publish_errors = Counter(
+    "kafka_publish_errors_total",
+    "Total number of errors publishing to Kafka",
+    ["tenant_id", "topic", "error_type"],
+)
+
 kafka_messages_consumed = Counter(
     "kafka_messages_consumed_total",
     "Total number of messages consumed from Kafka",

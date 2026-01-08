@@ -72,6 +72,8 @@ services:
       KAFKA_CONSUMER_GROUP_ID: slack-citizen-consumer
       LOG_LEVEL: INFO
       ENVIRONMENT: docker
+      PROJECT_MANAGER_SLACK_SIGNING_SECRET: ${PROJECT_MANAGER_SLACK_SIGNING_SECRET}
+      PROJECT_MANAGER_SLACK_BOT_TOKEN: ${PROJECT_MANAGER_SLACK_BOT_TOKEN}
     env_file:
       - .env
     networks:

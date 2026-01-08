@@ -63,7 +63,7 @@ class SlackSignatureVerifier(SignatureVerifier):
         try:
             sig_basestring = b"v0:" + slack_timestamp.encode("utf-8") + b":" + body
             expected_hmac = hmac.new(
-                settings.slack_signing_secret.encode("utf-8"),
+                settings.project_manager_slack_signing_secret.encode("utf-8"),
                 sig_basestring,
                 hashlib.sha256,
             ).hexdigest()

@@ -5,7 +5,7 @@ This document explains how to start, stop and operate the Slack Citizen service 
 **Assumptions**
 - You are working in the `citizens/slack-citizen` folder.
 - Docker and docker-compose are installed and available on PATH.
-- `.env` contains required secrets (`SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, etc.).
+- `.env` contains required secrets (`PROJECT_MANAGER_SLACK_BOT_TOKEN`, `PROJECT_MANAGER_SLACK_SIGNING_SECRET`, etc.).
 
 ---
 
@@ -15,6 +15,13 @@ Start the full local stack (Kafka, Zookeeper, kafka-ui, Prometheus, Slack Citize
 
 ```bash
 cd citizens/slack-citizen
+docker-compose up -d
+```
+
+Build Docker image without cache (useful for rebuilding with fresh dependencies):
+
+```bash
+docker-compose build --no-cache
 docker-compose up -d
 ```
 

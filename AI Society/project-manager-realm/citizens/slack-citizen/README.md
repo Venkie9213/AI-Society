@@ -77,8 +77,8 @@ Required environment variables:
 
 ```bash
 # Slack
-SLACK_SIGNING_SECRET=your_signing_secret
-SLACK_BOT_TOKEN=xoxb-your-bot-token
+PROJECT_MANAGER_SLACK_SIGNING_SECRET=your_signing_secret
+PROJECT_MANAGER_SLACK_BOT_TOKEN=xoxb-your-bot-token
 
 # Kafka
 KAFKA_BOOTSTRAP_SERVERS=localhost:9092
@@ -182,7 +182,7 @@ All logs include:
 ## Troubleshooting
 
 ### Webhook Signature Verification Fails
-- Verify `SLACK_SIGNING_SECRET` matches your Slack app configuration
+- Verify `PROJECT_MANAGER_SLACK_SIGNING_SECRET` matches your Slack app configuration
 - Check system clock is synchronized (signature includes timestamp)
 - Ensure raw request body is used (not parsed JSON)
 

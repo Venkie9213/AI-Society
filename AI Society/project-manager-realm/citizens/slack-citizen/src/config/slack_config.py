@@ -14,13 +14,13 @@ class SlackConfig(BaseSettings):
         extra="ignore",
     )
 
-    slack_signing_secret: str = Field(
+    project_manager_slack_signing_secret: str = Field(
         ...,
         description="Slack signing secret for webhook verification",
-        env=("PRODUCT_MANAGER_SLACK_SIGNING_SECRET", "SLACK_SIGNING_SECRET"),
+        env=("PROJECT_MANAGER_SLACK_SIGNING_SECRET"),
     )
-    slack_bot_token: str = Field(
+    project_manager_slack_bot_token: str = Field(
         ...,
         description="Slack bot OAuth token for API calls",
-        env=("PRODUCT_MANAGER_SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN"),
+        env=("PROJECT_MANAGER_SLACK_BOT_TOKEN"),
     )

@@ -1,9 +1,11 @@
 """Utility module initialization."""
 
-from src.utils.mapping import (
-    extract_slack_metadata_from_event,
+from src.utils.id_generator import (
     generate_entity_id,
     generate_event_id,
+)
+from src.utils.mapping import (
+    extract_slack_metadata_from_event,
     map_slack_command_to_internal_event,
     map_slack_interaction_to_internal_event,
     map_slack_message_to_internal_event,
