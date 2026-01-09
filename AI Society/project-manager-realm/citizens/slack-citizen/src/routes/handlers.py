@@ -37,7 +37,7 @@ class SlackMessageHandler(WebhookEventHandler):
             # Publish to internal event bus
             producer = await get_event_producer()
             await producer.publish_event(
-                topic="slack.message.received",
+                topic="message.received",
                 event=internal_event.model_dump(),
                 key=internal_event.event_id,
             )

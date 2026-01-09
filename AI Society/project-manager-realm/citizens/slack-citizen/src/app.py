@@ -45,10 +45,12 @@ def create_app() -> FastAPI:
             "requirement.requirement.created",
             "requirement.clarification.completed",
             "pulse.execution.failed",
-            "slack.reply.requested",
+            "reply.requested",
         ],
         handler=router.handle_event,
     )
+    
+    # NOTE: Topics are automatically prefixed with "project-manager." by get_kafka_topic()
 
     # Register middleware (order matters)
     app.middleware("http")(TenantMiddleware(app))

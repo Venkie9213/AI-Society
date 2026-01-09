@@ -18,7 +18,7 @@ class EventEnvelope(BaseModel):
 
 
 class SlackMessageReceivedPayload(BaseModel):
-    """Payload for slack.message.received event."""
+    """Payload for message.received event."""
 
     message_id: str = Field(..., description="Internal message identifier")
     slack_user_id: str = Field(..., description="Slack user ID")
@@ -102,7 +102,7 @@ class PulseExecutionFailedPayload(BaseModel):
 
 
 class SlackReplyRequestedPayload(BaseModel):
-    """Payload for slack.reply.requested event (from Intelligence Service)."""
+    """Payload for reply.requested event (from Intelligence Service)."""
 
     message_text: str = Field(..., description="Reply message text")
     slack_channel_id: str = Field(..., description="Channel to reply in")

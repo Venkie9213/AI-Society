@@ -105,6 +105,46 @@ class PulseEventHandler(EventHandler):
         return False
 
 
+class ClarificationCompletedHandler(EventHandler):
+    """Handles clarification completed events from intelligence service."""
+
+    async def _can_handle(self, event: dict[str, Any]) -> bool:
+        """Check if event is clarification completed."""
+        return event.get("event_type") == "requirement.clarification.completed"
+
+    async def _do_handle(self, event: dict[str, Any]) -> bool:
+        """Handle clarification completed - format and send to Slack."""
+        from src.services.slack_notifier import SlackNotifier
+        from src.utils.slack_formatter import format_clarification_questions_for_slack
+
+        notifier = SlackNotifier()
+        payload = event.get("payload", {})
+
+        if "questions" in payload and "slack_channel_id" in payload:
+            # Format questions for Slack
+            questions = payload.get("questions", [])
+            rationale = payload.get("rationale", "")
+            
+            message_text, message_blocks = format_clarification_questions_for_slack(questions, rationale)
+            
+            # Send formatted message to Slack
+            formatted_payload = {
+                "slack_channel_id": payload.get("slack_channel_id"),
+                "slack_thread_ts": payload.get("slack_thread_ts"),
+                "message_text": message_text,
+                "blocks": message_blocks,
+            }
+            
+            await notifier.send_slack_reply(formatted_payload, event.get("tenant_id"))
+            logger.debug(
+                "clarification_completed_handled",
+                event_id=event.get("event_id"),
+            )
+            return True
+
+        return False
+
+
 class IntelligenceEventHandler(EventHandler):
     """Handles intelligence service events."""
 
@@ -137,10 +177,11 @@ class EventRouterChain:
         """Initialize the event router with handler chain."""
         # Build the chain of responsibility
         self.root_handler = RequirementEventHandler()
+        clarification_handler = ClarificationCompletedHandler()
         pulse_handler = PulseEventHandler()
         intelligence_handler = IntelligenceEventHandler()
 
-        self.root_handler.set_next(pulse_handler).set_next(intelligence_handler)
+        self.root_handler.set_next(clarification_handler).set_next(pulse_handler).set_next(intelligence_handler)
 
     async def route_event(self, event: dict[str, Any]) -> None:
         """Route an event through the handler chain."""

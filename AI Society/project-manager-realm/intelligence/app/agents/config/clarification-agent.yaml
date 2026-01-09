@@ -1,0 +1,65 @@
+name: clarification-agent
+version: v1
+type: agent
+description: |
+  Generates clarifying questions to resolve requirement ambiguity and achieve high intent confidence.
+
+inputs:
+  project_context:
+    type: string
+    description: Context about the project
+  user_description:
+    type: string
+    description: Initial requirement description from user
+  conversation_history:
+    type: array
+    items:
+      type: object
+      properties:
+        role: {type: string, enum: [user, assistant]}
+        content: {type: string}
+    description: Previous exchanges in the conversation
+
+outputs:
+  questions:
+    type: array
+    items:
+      type: object
+      properties:
+        id: {type: integer}
+        text: {type: string}
+        category: {type: string}
+        priority: {type: string, enum: [high, medium, low]}
+  rationale:
+    type: string
+    description: Why these questions are important
+  estimated_confidence: {type: number, minimum: 0, maximum: 1}
+
+config:
+  max_questions: 5
+  target_confidence: 0.95
+  stop_condition: confidence_threshold_reached
+
+# Routing
+routing:
+  provider: gemini
+  model: gemini-3-flash-preview
+  use_case: balanced  # balanced speed/quality
+  temperature: 0.7
+  max_tokens: 1000
+
+# Prompt reference
+prompt_template: v1_requirement-question-generator.prompt
+
+# Metrics to track
+metrics:
+  - question_clarity
+  - gap_coverage
+  - progress_toward_confidence
+  - user_satisfaction
+
+# Success criteria
+success_criteria:
+  - confidence >= 0.95
+  - all_gaps_addressed: true
+  - questions_understood: true
