@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  confluence-citizen:
+    build: .
+    container_name: confluence-citizen
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:
+      - KAFKA_BROKERS=slack-citizen-kafka:9093
+    networks:
+      - default
+      - slack-citizen_slack-citizen-network
+    restart: unless-stopped
+
+networks:
+  slack-citizen_slack-citizen-network:
+    external: true

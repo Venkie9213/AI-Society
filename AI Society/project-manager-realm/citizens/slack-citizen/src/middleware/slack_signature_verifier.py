@@ -1,26 +1,12 @@
-"""Request signature verification strategies (Strategy Pattern)."""
-
 import hashlib
 import hmac
 import time
-from abc import ABC, abstractmethod
-
 from fastapi import HTTPException, status
-
 from src.config import settings
 from src.utils.observability import get_logger
+from src.middleware.signature_verifier import SignatureVerifier
 
 logger = get_logger(__name__)
-
-
-class SignatureVerifier(ABC):
-    """Abstract base for signature verification strategies."""
-
-    @abstractmethod
-    async def verify(self, request) -> None:
-        """Verify request signature."""
-        pass
-
 
 class SlackSignatureVerifier(SignatureVerifier):
     """Verifies Slack request signatures using HMAC-SHA256."""

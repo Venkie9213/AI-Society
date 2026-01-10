@@ -1,0 +1,10 @@
+from pydantic import BaseModel
+from datetime import datetime
+
+class HealthResponse(BaseModel):
+    """Health check response model."""
+
+    status: str
+    service: str
+    version: str
+    timestamp: datetime

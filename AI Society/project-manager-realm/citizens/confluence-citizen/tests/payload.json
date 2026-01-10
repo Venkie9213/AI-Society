@@ -1,0 +1,54 @@
+{
+    "event_id": "c7a2b9d1-e8f4-4a2c-9d1e-3b5a7c9d0f1a",
+    "event_type": "project-manager.requirement.prd.generated",
+    "source": "intelligence-service",
+    "tenant_id": "tenant_abc_123",
+    "occurred_at": "2026-01-09T14:45:00Z",
+    "payload": {
+        "conversation_id": "conv_99887766",
+        "prd": {
+            "🚀 Project Overview": {
+                "Project Title": "Astraeus AI Gateway",
+                "Version": "v1.2.0-Alpha",
+                "Status": "🌕 Researching",
+                "Owner": "Venkie (AI PM)",
+                "Summary": "A specialized high-performance gateway for orchestrating multi-agent communications across decentralized networks."
+            },
+            "🎯 Business Goals": [
+                "Reduce inter-agent latency by 40% using edge caching ⚡",
+                "Support multi-tenancy for up to 10,000 active 'citizens'",
+                "Provide zero-trust security for all pulse communications 🛡️"
+            ],
+            "👤 User Personas": {
+                "The Architect": "Needs a bird's eye view of all active agents and their health status.",
+                "The Citizen": "Wants seamless automation of recurring tasks with minimal configuration.",
+                "The Auditor": "Requires immutable logs of every decision made by the AI intelligence layer."
+            },
+            "📝 Functional Requirements": {
+                "Agent Discovery": "Automatic detection of new services in the `citizens` directory using broadcast pulses.",
+                "Dynamic Routing": "Intelligent pathing based on agent availability and past performance metrics.",
+                "Payload Transformation": "On-the-fly conversion between Slack, Confluence, and internal XML formats."
+            },
+            "💻 Technical Stack": {
+                "Infrastructure": "Kubernetes, Terraform, AWS EKS ☁️",
+                "Middleware": "Apache Kafka (Event Bus), Redis (Caching)",
+                "Language": "Python 3.12 (FastAPI), Rust (Performance critical modules) 🦀",
+                "Database": "TimescaleDB (TS metrics), PostgreSQL (Relational)"
+            },
+            "📈 Key Performance Indicators (KPIs)": {
+                "Success Rate": "> 99.9% for message delivery",
+                "Average Latency": "< 50ms for local routing",
+                "Throughput": "10k events per second"
+            },
+            "🗺️ Roadmap & Milestones": [
+                "Q1 2026: Core Engine Development & Kafka Integration",
+                "Q2 2026: Multi-citizen Beta Release & Confluence Sync",
+                "Q3 2026: External API Gateway & Security Hardening 🔒"
+            ],
+            "⚠️ Risks & Mitigation": {
+                "Data Gravity": "Mitigation: Implement regional sharding for database clusters.",
+                "Agent Hallucination": "Mitigation: Use strict schema validation for all Kafka payloads."
+            }
+        }
+    }
+}

@@ -6,11 +6,9 @@ import httpx
 from fastapi import Request, Response
 
 from src.config import settings
-from src.middleware.tenant_extractors import (
-    HeaderTenantExtractor,
-    SlackTeamTenantExtractor,
-    TenantExtractorChain,
-)
+from src.middleware.header_tenant_extractor import HeaderTenantExtractor
+from src.middleware.slack_team_tenant_extractor import SlackTeamTenantExtractor
+from src.middleware.tenant_extractor_chain import TenantExtractorChain
 from src.utils.observability import add_context, clear_context, get_logger
 
 logger = get_logger(__name__)

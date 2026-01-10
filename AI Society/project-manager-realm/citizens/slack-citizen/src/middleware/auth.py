@@ -5,7 +5,7 @@ from typing import Callable
 from fastapi import HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 
-from src.middleware.signature_verifiers import SlackSignatureVerifier
+from src.middleware.slack_signature_verifier import SlackSignatureVerifier
 from src.utils.observability import get_logger
 
 logger = get_logger(__name__)

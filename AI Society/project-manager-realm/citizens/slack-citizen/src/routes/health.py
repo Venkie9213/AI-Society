@@ -10,21 +10,8 @@ from src.config import settings
 router = APIRouter(tags=["health"])
 
 
-class HealthResponse(BaseModel):
-    """Health check response model."""
-
-    status: str
-    service: str
-    version: str
-    timestamp: datetime
-
-
-class ReadinessResponse(BaseModel):
-    """Readiness check response model."""
-
-    ready: bool
-    service: str
-    checks: dict[str, bool]
+from src.schemas.health import HealthResponse
+from src.schemas.readiness import ReadinessResponse
 
 
 @router.get("/health", response_model=HealthResponse)

@@ -5,7 +5,7 @@ from typing import Any, Optional
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.errors import SlackApiError
 
-from src.clients.slack_repository import SlackClientRepository
+from src.clients.slack_client_repository import SlackClientRepository
 from src.config import settings
 from src.utils.observability import get_logger, slack_api_calls, slack_api_errors
 from src.utils.retry import retry_with_dlq
