@@ -6,7 +6,7 @@ from enum import Enum
 import structlog
 
 from app.providers.base import LLMProvider, LLMMessage, LLMResponse
-from app.providers.gemini import GeminiProvider
+from app.providers.implementations.gemini import GeminiProvider
 
 logger = structlog.get_logger()
 

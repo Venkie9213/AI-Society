@@ -30,6 +30,14 @@ class AppConfig(BaseSettings):
         default="development",
         description="Environment name (development, staging, production)",
     )
+    gateway_url: str = Field(
+        default="http://gateway-council:8000",
+        description="Dynamic discovery gateway URL",
+    )
+    service_url: str = Field(
+        default="http://slack-citizen:8000",
+        description="Publicly reachable URL for this service",
+    )
 
     @property
     def is_production(self) -> bool:

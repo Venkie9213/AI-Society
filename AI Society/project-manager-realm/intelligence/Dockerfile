@@ -15,7 +15,7 @@ COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY app .
+COPY app ./app
 
 # Ensure agents directory exists and is populated
 RUN if [ ! -d /app/agents ] || [ ! "$(ls -A /app/agents)" ]; then \

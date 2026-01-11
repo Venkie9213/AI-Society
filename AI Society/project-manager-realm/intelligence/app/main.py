@@ -17,7 +17,8 @@ from app.providers.manager import init_provider_router
 from app.loaders import get_config_loader
 from app.orchestration import get_agent_orchestrator
 from app.kafka import KafkaMessageConsumer, KafkaMessageProducer, handle_slack_message
-from app.api import health, debug, providers, agents
+from app.api import health_router, debug_router, providers_router, agents_router
+from app.core.discovery import DiscoveryClient
 
 # Setup structured logging
 settings = get_settings()
@@ -38,6 +39,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     
     # Startup
     logger.info("app_startup", version=settings.app_version)
+    discovery_client = DiscoveryClient("intelligence")
+    await discovery_client.register()
     
     # Initialize database
     try:
@@ -126,6 +129,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     
     # Shutdown
     logger.info("app_shutdown")
+    await discovery_client.unregister()
     
     # Stop Kafka producer
     try:
@@ -193,10 +197,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 # Include routers
-app.include_router(health.router, prefix="/api/v1", tags=["health"])
-app.include_router(debug.router, prefix="/api/v1/debug", tags=["debug"])
-app.include_router(providers.router, prefix="/api/v1", tags=["providers"])
-app.include_router(agents.router, prefix="/api/v1", tags=["agents"])
+app.include_router(health_router, prefix="/api/v1", tags=["health"])
+app.include_router(debug_router, prefix="/api/v1/debug", tags=["debug"])
+app.include_router(providers_router, prefix="/api/v1", tags=["providers"])
+app.include_router(agents_router, prefix="/api/v1", tags=["agents"])
 
 # Root endpoint
 @app.get("/")

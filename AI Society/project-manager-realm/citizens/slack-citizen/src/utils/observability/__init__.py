@@ -11,6 +11,7 @@ from src.utils.observability.metrics import (
     kafka_messages_consumed,
     event_processing_duration,
 )
+from src.utils.observability.context import get_tenant_id, get_correlation_id
 from src.utils.observability.server import start_metrics_server
 
 __all__ = [
@@ -27,4 +28,6 @@ __all__ = [
     "kafka_messages_consumed",
     "event_processing_duration",
     "start_metrics_server",
+    "get_tenant_id",
+    "get_correlation_id",
 ]

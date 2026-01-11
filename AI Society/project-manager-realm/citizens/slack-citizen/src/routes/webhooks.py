@@ -8,7 +8,6 @@ from pydantic import ValidationError
 
 from src.clients import get_slack_client
 from src.events import get_event_producer
-from src.middleware import get_tenant_id
 from src.schemas import SlackCommand, SlackEventWrapper, SlackInteraction, SlackMessage
 from src.utils.mapping import (
     map_slack_command_to_internal_event,
@@ -17,6 +16,7 @@ from src.utils.mapping import (
 )
 from src.utils.observability import (
     get_logger,
+    get_tenant_id,
     slack_messages_processing_duration,
     slack_messages_received,
 )

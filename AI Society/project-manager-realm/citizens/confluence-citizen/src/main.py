@@ -2,6 +2,7 @@ from fastapi import FastAPI
 import uvicorn
 from src.config.settings import settings
 from src.utils.observability import setup_logging
+from src.utils.discovery import DiscoveryClient
 import structlog
 
 logger = structlog.get_logger()
@@ -20,8 +21,11 @@ from src.events.consumer import KafkaConsumerService
 setup_logging()
 logger = structlog.get_logger()
 
+discovery_client = DiscoveryClient("confluence-citizen")
+
 @app.on_event("startup")
 async def startup_event():
+    await discovery_client.register()
     logger.info("confluence_citizen_starting", version=settings.app_version)
     
     # Initialize Workspace Service
@@ -44,6 +48,7 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
+    await discovery_client.unregister()
     logger.info("confluence_citizen_shutting_down")
     if hasattr(app.state, "consumer_service"):
         await app.state.consumer_service.stop()

@@ -24,8 +24,21 @@ class CouncilService:
 
     @staticmethod
     async def create_workspace(session: AsyncSession, workspace_in: WorkspaceCreate) -> Workspace:
+        tenant_id = workspace_in.tenant_id
+
+        # Resolve tenant_id from external_id if missing
+        if not tenant_id and workspace_in.tenant_external_id:
+            tenant = await CouncilService.get_tenant_by_external_id(session, workspace_in.tenant_external_id)
+            if not tenant:
+                logger.error("tenant_not_found_by_external_id", external_id=workspace_in.tenant_external_id)
+                raise ValueError(f"Tenant with external_id '{workspace_in.tenant_external_id}' not found")
+            tenant_id = tenant.id
+
+        if not tenant_id:
+             raise ValueError("Valid tenant identifier (ID or External ID) is required")
+
         workspace = Workspace(
-            tenant_id=workspace_in.tenant_id,
+            tenant_id=tenant_id,
             type=workspace_in.type,
             name=workspace_in.name,
             external_id=workspace_in.external_id

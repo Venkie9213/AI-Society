@@ -5,9 +5,9 @@ from typing import Optional
 import structlog
 
 from app.config import Settings, get_settings
-from app.loaders.provider_loader import ProviderLoader, get_provider_loader
-from app.loaders.agent_loader import AgentLoader, get_agent_loader
-from app.loaders.prompt_loader import PromptLoader, get_prompt_loader
+from app.loaders.implementations.provider_loader import ProviderLoader, get_provider_loader
+from app.loaders.implementations.agent_loader import AgentLoader, get_agent_loader
+from app.loaders.implementations.prompt_loader import PromptLoader, get_prompt_loader
 
 logger = structlog.get_logger()
 

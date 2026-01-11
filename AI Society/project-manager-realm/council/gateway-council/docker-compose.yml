@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  gateway-council:
+    build: .
+    container_name: gateway-council
+    ports:
+      - "8000:8000"
+    environment:
+      - WORKSPACE_COUNCIL_URL=http://workspace-council:8000
+      - SLACK_CITIZEN_URL=http://slack-citizen:8000
+      - CONFLUENCE_CITIZEN_URL=http://confluence-citizen:8000
+      - PROJECT_MANAGER_SLACK_SIGNING_SECRET=your_secret_here
+    networks:
+      - project-manager-network
+
+networks:
+  project-manager-network:
+    external: true

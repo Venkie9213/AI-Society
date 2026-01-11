@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  jira-citizen:
+    build: .
+    container_name: jira-citizen
+    ports:
+      - "8001:8001"
+      - "9002:9002"
+    environment:
+      - APP_NAME=Jira Citizen
+      - APP_VERSION=0.1.0
+      - LOG_LEVEL=INFO
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_CONSUMER_GROUP=jira-citizen-group
+      - GATEWAY_URL=http://gateway-council:8000
+    networks:
+      - project-manager-network
+
+networks:
+  project-manager-network:
+    external: true

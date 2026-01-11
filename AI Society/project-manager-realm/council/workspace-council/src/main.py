@@ -3,6 +3,7 @@ from src.api.v1 import tenants, workspaces
 from src.config.database import db_manager, Base
 from src.utils.observability import setup_logging, get_logger
 from src.config.settings import settings
+from src.utils.discovery import DiscoveryClient
 
 # Initialize Logging
 setup_logging()
@@ -17,8 +18,11 @@ app = FastAPI(
 app.include_router(tenants.router, prefix="/api/v1")
 app.include_router(workspaces.router, prefix="/api/v1")
 
+discovery_client = DiscoveryClient("workspace-council")
+
 @app.on_event("startup")
 async def startup_event():
+    await discovery_client.register()
     logger.info("workspace_council_starting", version=settings.app_version)
     
     # Create tables automatically for development
@@ -27,6 +31,11 @@ async def startup_event():
         await conn.run_sync(Base.metadata.create_all)
     
     logger.info("workspace_council_started")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await discovery_client.unregister()
+    logger.info("workspace_council_stopping")
 
 @app.get("/health")
 async def health_check():
